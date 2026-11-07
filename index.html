@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#202b32">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PAKORA">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>PAKORA | İşletme Takip</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#202b32;background:#f3f5f4}
+*{box-sizing:border-box}body{margin:0;padding:0 0 30px}.hero{background:#202b32;color:white;padding:28px 20px 22px;border-radius:0 0 24px 24px}
+.brand{font-size:30px;font-weight:850;letter-spacing:2px}.tag{color:#cbd6d8;font-size:11px;letter-spacing:1.4px;margin-top:4px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}.stat strong{font-size:25px;display:block}.stat span{font-size:12px;color:#cbd6d8}
+.track{height:9px;background:#526168;border-radius:20px;margin-top:18px;overflow:hidden}.fill{height:100%;background:#8ac9a7;width:0%;transition:.2s}
+main{max-width:760px;margin:auto;padding:18px 14px}.section-title{font-weight:750;font-size:17px;margin:18px 2px 10px}
+.card{background:white;border:1px solid #e0e6e2;border-radius:16px;padding:15px;margin:10px 0;box-shadow:0 2px 8px #16231b08}
+.phase-head{display:flex;align-items:center;gap:10px;cursor:pointer}.phase-name{font-weight:750;flex:1}.muted{color:#68766f;font-size:12px;margin-top:4px}.pill{font-size:11px;border-radius:20px;padding:5px 9px;background:#eef1ef;color:#58645e}.pill.done{background:#e1f3e8;color:#187348}
+.phasebar{height:5px;background:#edf0ee;border-radius:10px;margin-top:12px;overflow:hidden}.phasebar div{height:100%;background:#269b78}
+.tasks{display:none;border-top:1px solid #edf0ee;margin-top:12px;padding-top:8px}.card.open .tasks{display:block}
+.task{display:flex;align-items:flex-start;gap:10px;padding:10px 0;font-size:14px;line-height:1.35}.task input{width:19px;height:19px;accent-color:#269b78;flex-shrink:0;margin:0}
+label{display:block;font-size:12px;color:#68766f;margin:12px 0 5px}input[type=number],textarea{width:100%;border:1px solid #dce3de;border-radius:10px;padding:12px;font:inherit;background:#fff;color:#202b32}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#f4f7f5;border-radius:11px;padding:12px}.metric b{font-size:18px}.btn{border:0;border-radius:11px;padding:13px 15px;background:#202b32;color:white;font-weight:700;font-size:14px;width:100%;margin-top:12px}.btn.alt{background:#e9efeb;color:#24352c}.btn.red{background:transparent;color:#a13b3b}
+.note{font-size:12px;color:#68766f;line-height:1.5}.footer{text-align:center;color:#77827c;font-size:11px;margin:24px 10px}
+</style>
+</head>
+<body>
+<header class="hero">
+ <div class="brand">PAKORA</div><div class="tag">90 GÜNLÜK E-TİCARET YOLCULUĞU</div>
+ <div class="stats">
+  <div class="stat"><strong id="percent">0%</strong><span>Genel ilerleme</span></div>
+  <div class="stat"><strong id="count">0/31</strong><span>Tamamlanan görev</span></div>
+  <div class="stat"><strong>8.000 TL</strong><span>Başlangıç sermayesi</span></div>
+  <div class="stat"><strong>2 ortak</strong><span>%50 – %50</span></div>
+ </div>
+ <div class="track"><div class="fill" id="overall"></div></div>
+ <div class="note" style="color:#d5dfda;margin-top:9px" id="status">İlk görevinizi tamamlayarak başlayın.</div>
+</header>
+<main>
+ <div class="section-title">Başarı aşamaları</div>
+ <div id="phases"></div>
+ <div class="section-title">Satış ve finans paneli</div>
+ <section class="card">
+  <div class="grid">
+   <div><label for="orders">Toplam sipariş</label><input id="orders" type="number" min="0" inputmode="numeric" value="0"></div>
+   <div><label for="revenue">Toplam ciro (TL)</label><input id="revenue" type="number" min="0" inputmode="decimal" value="0"></div>
+   <div><label for="expenses">Toplam gider (TL)</label><input id="expenses" type="number" min="0" inputmode="decimal" value="0"></div>
+   <div class="metric"><label>Gelir – gider farkı</label><b id="profit">0 TL</b></div>
+  </div>
+  <label for="notes">İşletme notları</label><textarea id="notes" rows="4" placeholder="Tedarikçi görüşmeleri, müşteri talepleri, kararlar..."></textarea>
+  <button class="btn" id="export">Raporu paylaş / indir</button>
+  <button class="btn alt" id="backup">Yedek dosyası oluştur</button>
+  <button class="btn red" id="reset">Tüm takip verilerini sıfırla</button>
+  <p class="note">Veriler bu telefondaki tarayıcıda saklanır. Tarayıcı verilerini temizlerseniz veriler silinebilir. Düzenli yedek alın.</p>
+ </section>
+ <div class="footer">PAKORA • İşletme takip paneli • Sürüm 1.0</div>
+</main>
+<script>
+const phases=[
+{name:"1. Aşama – Kuruluş",period:"1–15. gün",tasks:["Marka ismini kesinleştirmek","Marka ve alan adı araştırması yapmak","Ortaklık anlaşmasını hazırlamak","Mali müşavirle görüşmek","5 tedarikçiden fiyat almak","Ürün numunelerini incelemek"]},
+{name:"2. Aşama – Ürün ve mağaza",period:"16–30. gün",tasks:["İlk ürün stoklarını belirlemek","Logo ve marka kimliğini hazırlamak","Instagram mağazasını açmak","WhatsApp Business kurmak","Ürün fotoğraflarını çekmek","İlk ürün kataloğunu hazırlamak","İlk 20 potansiyel müşteriyle görüşmek"]},
+{name:"3. Aşama – İlk satışlar",period:"31–45. gün",tasks:["İlk satışları gerçekleştirmek","İlk siparişleri göndermek","Müşteri yorumlarını toplamak","İlk gelir-gider raporunu hazırlamak","Ürün başına kârı hesaplamak"]},
+{name:"4. Aşama – Büyüme",period:"46–60. gün",tasks:["Trendyol mağazasını açmak","En çok talep gören iki ürünü belirlemek","Tekrar sipariş kampanyası hazırlamak","İlk reklam kampanyasını ölçmek","En az 25 aylık sipariş hedefine ulaşmak"]},
+{name:"5. Aşama – Ölçekleme",period:"61–90. gün",tasks:["Düzenli müşteri portföyü oluşturmak","Stok devir hızını analiz etmek","Toptan satış teklifleri hazırlamak","Kârlı ürünlerin stoklarını artırmak","90 günlük finansal raporu hazırlamak","Sonraki 90 günlük büyüme hedefini belirlemek"]}
+];
+const total=phases.reduce((s,p)=>s+p.tasks.length,0);
+const defaults={done:[],orders:0,revenue:0,expenses:0,notes:""};
+let data={...defaults,...JSON.parse(localStorage.getItem("pakora-data")||"{}")};
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem("pakora-data",JSON.stringify(data));renderStats();updateFinance()}
+function renderStats(){
+ const n=data.done.length,p=Math.round(n/total*100);
+ $("percent").textContent=p+"%";$("count").textContent=n+"/"+total;$("overall").style.width=p+"%";
+ $("status").textContent=p===100?"90 günlük görevlerin tamamlandı.":`${total-n} görev tamamlanmayı bekliyor.`;
+}
+function renderPhases(){
+ $("phases").innerHTML="";
+ phases.forEach((phase,i)=>{
+  const done=phase.tasks.filter((_,j)=>data.done.includes(i+"-"+j)).length;
+  const card=document.createElement("section");card.className="card"+(i===0?" open":"");
+  const head=document.createElement("div");head.className="phase-head";
+  head.innerHTML=`<div style="flex:1"><div class="phase-name">${phase.name}</div><div class="muted">${phase.period}</div></div><span class="pill ${done===phase.tasks.length?"done":""}">${done}/${phase.tasks.length}</span><span>⌄</span>`;
+  head.onclick=()=>card.classList.toggle("open");card.appendChild(head);
+  const bar=document.createElement("div");bar.className="phasebar";bar.innerHTML=`<div style="width:${done/phase.tasks.length*100}%"></div>`;card.appendChild(bar);
+  const tasks=document.createElement("div");tasks.className="tasks";
+  phase.tasks.forEach((task,j)=>{
+   const id=i+"-"+j,row=document.createElement("label");row.className="task";
+   const cb=document.createElement("input");cb.type="checkbox";cb.checked=data.done.includes(id);
+   cb.onchange=()=>{data.done=cb.checked?[...data.done,id]:data.done.filter(x=>x!==id);save();renderPhases()};
+   const span=document.createElement("span");span.textContent=task;row.append(cb,span);tasks.appendChild(row);
+  });
+  card.appendChild(tasks);$("phases").appendChild(card);
+ });
+ renderStats();
+}
+function updateFinance(){
+ $("profit").textContent=(Number(data.revenue||0)-Number(data.expenses||0)).toLocaleString("tr-TR")+" TL";
+}
+["orders","revenue","expenses","notes"].forEach(id=>{
+ $(id).value=data[id]??defaults[id];
+ $(id).addEventListener("input",()=>{data[id]=id==="notes"?$(id).value:Number($(id).value||0);save()});
+});
+function report(){return `PAKORA İŞLETME RAPORU\nİlerleme: ${$("percent").textContent}\nGörev: ${$("count").textContent}\nSipariş: ${data.orders}\nCiro: ${data.revenue} TL\nGider: ${data.expenses} TL\nGelir-gider farkı: ${Number(data.revenue)-Number(data.expenses)} TL\nNotlar: ${data.notes}`;}
+$("export").onclick=async()=>{const t=report();if(navigator.share){try{await navigator.share({title:"PAKORA İşletme Raporu",text:t})}catch(e){}}else{const blob=new Blob([t],{type:"text/plain;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="pakora-rapor.txt";a.click();URL.revokeObjectURL(a.href)}};
+$("backup").onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="pakora-yedek.json";a.click();URL.revokeObjectURL(a.href)};
+$("reset").onclick=()=>{if(confirm("Tüm görev, satış ve not verileri silinsin mi?")){data={...defaults};save();renderPhases();["orders","revenue","expenses","notes"].forEach(id=>$(id).value=data[id])}};
+renderPhases();updateFinance();
+if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
+</script>
+</body></html>
